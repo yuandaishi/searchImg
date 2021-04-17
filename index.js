@@ -1,29 +1,32 @@
-const model = require("./model"),
-    basicPath = "https://www.meitulu.com/t/zhouyanxi/2.html";//协议如果是https，则不能用http代替
-const main = async url => {
-    let list = [],
-        index = 0;
-    const data = await model.getPage(url);
-    list = model.getUrl(data, '.boxs .img li .p_title a');//套图组的信息（名称和url）
-    downLoadImages(list, index);//下载
-};
-const downLoadImages = async (list, index) => {
-    if (list[index]&&model.getTitle(list[index])) {
-        let item = await model.getPage(list[index].url),//获取图片所在网页的url
-            imageNum = model.getImagesNum(item.res, list[index].name, '#pages');//获取这组图片的页码
-        for (var i = 1; i <= imageNum; i++) {
-            if (i == 1) {
-                var page = await model.getPage(list[index].url);//遍历获取这组图片每一张所在的网页
-            } else {
-                var page = await model.getPage(list[index].url.substring(0, list[index].url.length - 5) + `_${i}.html`);//遍历获取这组图片每一张所在的网页
-            }
-            await model.downloadImage(page, i, '.content center');//下载当前页
+// http://www.44932.com
+//https://www.jpxgmn.com/
+var model = require("./model"),
+    basicPath = "https://www.jpxgmn.com/Xgyw/Xgyw6684.html",//协议如果是https，则不能用http代替
+    baseImg = 'https://p.plmn5.com',//图片地址前缀
+    imageNum,//页码
+    startNum = 0, //图片名称
+    downloadPath = '';//文件夹名称
+
+const init = async url => {//初始化，获取套图页码，创建套图文件夹
+    const data = await model.getPage(url);//获取网页内容
+    downloadPath = model.setFileName(data, '.article-title');//定义文件夹名称
+    imageNum = model.getImagesNum(data, '.pagination a');//获取这组图片的页码
+    model.mkdirSync(downloadPath);//创建文件夹
+    for (let i = 0; i < imageNum; i++) {//翻页处理
+        let url;
+        if (i === 0) {
+            url = basicPath;
+        } else {
+            url = basicPath.substring(0, basicPath.length - 5) + `_${i}.html`
         }
-        index++;
-        downLoadImages(list, index);//循环完成下载下一组
-    }else{
-        index++;
-        downLoadImages(list, index);//循环完成下载下一组 
+        main(url);
     }
+}
+
+const main = async url => {
+    const data = await model.getPage(url);
+    let list = model.getImgObj(data, 'p img', baseImg);//套图组的信息（名称和url
+    await model.downloadImage(list, downloadPath, startNum);//下载图片
+    startNum += list.length;
 };
-main(basicPath);
+init(basicPath);
