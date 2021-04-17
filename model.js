@@ -75,11 +75,12 @@ module.exports = {
         // }
         //console.log(startNum)
         for (let i = 0; i < list.length; i++) {
+            let name = list[i].url.split('/')[list[i].url.split('/').length - 1];
             await rq({
                 url: list[i].url,//图片地址
                 resolveWithFullResponse: true,
-            }).pipe(fs.createWriteStream(`${depositPath}${downloadPath}/${i + startNum}.jpg`));//下载
-            console.log(`${downloadPath}/${i + startNum}.jpg下载成功`);
+            }).pipe(fs.createWriteStream(`${depositPath}${downloadPath}/${name}`));//下载
+            console.log(`${downloadPath}/${name}下载成功`);
         }
     }
 }

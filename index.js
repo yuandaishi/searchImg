@@ -1,7 +1,7 @@
 // http://www.44932.com
 //https://www.jpxgmn.com/
 var model = require("./model"),
-    basicPath = "https://www.jpxgmn.com/Xgyw/Xgyw6684.html",//协议如果是https，则不能用http代替
+    basicPath = "https://www.jpxgmn.com/Xgyw/Xgyw5846.html",//协议如果是https，则不能用http代替
     baseImg = 'https://p.plmn5.com',//图片地址前缀
     imageNum,//页码
     startNum = 0, //图片名称
